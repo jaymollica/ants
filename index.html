@@ -24,6 +24,11 @@ a {
   width:500px;
 }
 
+#rollover {
+  font-size:.5em;
+  color:#AAAAAA;
+}
+
 #sunburst {
   margin-top:130px;
   float:left;
@@ -78,7 +83,11 @@ body.loading .modal {
 $(document).ready(function() {
 
   function chooseAnt(ant) {
-   // $('#rollover').text(ant);
+    $('#rollover').text(ant);
+  }
+
+  function emptyRollover() {
+    $('#rollover').text('');
   }
 
   function clickAnt(ant) {
@@ -128,6 +137,7 @@ $(document).ready(function() {
         .attr("d", arc)
         .on("mouseover",function(d) { chooseAnt(d.name); })
         .on("click",function(d) { clickAnt(d.name); })
+        .on("mouseout", function() {emptyRollover();})
         .style("stroke", "#fff")
         .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
         .style("fill-rule", "evenodd")
@@ -196,6 +206,7 @@ $(document).ready(function() {
   If you have any questions or comments email me here, or feel free to <a href="https://github.com/vaguespace/ants">peek under the hood</a>.
   </p>
   </div>
+  <div id="rollover"></div>
 </div>
 
 <div id="sunburst"></div>
