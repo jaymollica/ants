@@ -47,7 +47,7 @@
 			if($page['imageinfo']) {
 				foreach($page['imageinfo'] AS $info) {
 					if(preg_match('/.webm/i',$info['url'])) {
-						print '<a href="' . $info['url'] . '"><video width="200px" ><source src="' . $info['url'] . '" type="video/webm" /></video></a>';
+						print '<a href="' . $info['url'] . '"><video width="400px" ><source src="' . $info['url'] . '" type="video/webm" /></video></a>';
 						$n++;
 					}
 					elseif(!preg_match('/.svg/i',$info['url'])) {
