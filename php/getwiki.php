@@ -22,7 +22,7 @@
 	$i = 0;
 	foreach($array['query']['pages'] AS $page) {
 
-		if($page['images']) {
+		if(isset($page['images'])) {
 
 			foreach($page['images'] AS $img) {
 				$img['title'] = preg_replace('/File:/i','',$img['title']);
@@ -60,7 +60,7 @@
 	}
 
 	if($n == 0) {
-		print '<p>No images available.</p>';
+		print '<p>No images available for <i>' . $antReq . '</i>.</p>';
 	}
 
 ?>
