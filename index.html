@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<head>
+  <title>Taxonomy Sunburst</title>
 <style>
 
 body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   margin: auto;
   position: relative;
-  width: 960px;
+  width: 95%;
+
 }
 
 a {
@@ -14,14 +17,16 @@ a {
 } 
 
 #antbox {
-  position:absolute;
   top:20px;
   font-size:2em;
+  width:45%;
+  float:left;
+  margin-top:20px;
 }
 
 #description {
   font-size:.5em;
-  width:500px;
+  width:100%;
 }
 
 #rollover {
@@ -30,49 +35,43 @@ a {
 }
 
 #sunburst {
-  margin-top:130px;
   float:left;
-  width:500px;
+  width:40%;
 }
 
 #imgPanel {
   float:left;
-  width:420px;
+  width:45%;
   margin-left:30px;
-  margin-top:40px;
+}
+
+.specimen_box {
+  width:100%;
+  float:left;
+  clear:both;
+  padding-bottom:20px;
+  border-bottom:1px solid lightgray;
+}
+
+p.taxonomy {
+  font-size: 1em;
+  color:#AAAAAA;
+}
+
+#loading {
+  margin-left:2%;
+  font-size:.5em;
 }
 
 #imgPanel img {
   float:left;
   margin-bottom:10px;
+  margin-right:10px;
 }
 
 path:hover{
     opacity: 0.5;
 }
-
-.modal {
-    display:    none;
-    position:   fixed;
-    z-index:    1000;
-    top:        0;
-    left:       0;
-    height:     100%;
-    width:      100%;
-    background: rgba( 255, 255, 255, .8 ) 
-                url('images/waitwait.gif') 
-                50% 50% 
-                no-repeat;
-}
-
-body.loading {
-    overflow: hidden;   
-}
-
-body.loading .modal {
-    display: block;
-}
-
 
 </style>
 
@@ -83,21 +82,21 @@ body.loading .modal {
 $(document).ready(function() {
 
   function chooseAnt(ant) {
-    $('#rollover').text(ant);
+    $('#rollover').html('Show me <i>' + ant + '</i>');
   }
 
   function emptyRollover() {
-    $('#rollover').text('');
+    $('#rollover').text('Click a section to reveal any images.');
   }
 
-  function clickAnt(ant) {
+  function clickAnt(ant,depth) {
 
     $('#subname').text(ant);
     if(ant == 'ant') {
       $('#subname').text('');
     }
 
-    var ant = {"ant":ant};
+    var ant = {"ant":ant,"depth":depth};
     var url = 'php/getwiki.php';
 
     $.post(url,ant, function(data) {
@@ -115,7 +114,7 @@ $(document).ready(function() {
       .attr("width", width)
       .attr("height", height)
       .append("g")
-      .attr("transform", "translate(" + width / 2 + "," + height * .52 + ")");
+      .attr("transform", "translate(" + width / 2 + "," + height * .42 + ")");
 
   var partition = d3.layout.partition()
       .sort(null)
@@ -136,7 +135,7 @@ $(document).ready(function() {
         .attr("display", function(d) { return d.depth ? null : "none"; }) // hide inner ring
         .attr("d", arc)
         .on("mouseover",function(d) { chooseAnt(d.name); })
-        .on("click",function(d) { clickAnt(d.name); })
+        .on("click",function(d) { clickAnt(d.name,d.depth); })
         .on("mouseout", function() {emptyRollover();})
         .style("stroke", "#fff")
         .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
@@ -177,13 +176,10 @@ $(document).ready(function() {
 
   d3.select(self.frameElement).style("height", height + "px");
 
-  $("#imgPanel").bind({
-    ajaxStart: function() { 
-      $(this).addClass("loading"); 
-    },
-    ajaxStop: function() { 
-      $(this).removeClass("loading"); 
-    }    
+  $(document).ajaxStart(function(){
+    $('#loading').show();
+  }).ajaxStop(function(){
+    $('#loading').hide();
   });
 
   clickAnt('ant');
@@ -192,24 +188,28 @@ $(document).ready(function() {
 
 </script>
 
+</head>
+
 <body>
 
 <div id="antbox">Formicidae <span id="subname"></span>
   <div id="description">
   <p>
-  The inner ring represents <i>subfamilia</i> and the outer ring represents <i>genera</i>.  Click a section to reveal any images.
+  The inner ring represents <i>subfamilia</i> and the outer ring represents <i>genera</i>.  
   </p>
   <p> 
-  The data is sourced from <a href="http://www.antcat.org">www.antcat.org</a> and the images are sourced from the Wikipedia API.  The sunburst layout is borrowed from <a href="http://bl.ocks.org/mbostock/4063423">here</a>.
+  The taxonomy data is sourced from <a href="http://www.antcat.org">www.antcat.org</a> and the specimen are sourced from the <a href="http://www.antweb.org/api">AntWeb API</a>.  The sunburst layout is borrowed from <a href="http://bl.ocks.org/mbostock/4063423">here</a>.
   </p>
   <p>
-  If you have any questions or comments email me <a href="mailto:info@vaguespace.org">here</a>, or feel free to <a href="https://github.com/vaguespace/ants">peek under the hood</a>.
+  If you have any questions or comments email me <a href="mailto:info@vaguespace.org">here</a>.
   </p>
   </div>
-  <div id="rollover"></div>
+  <div><span id="rollover">Click a section to reveal any images.</span><span id="loading">Loading...</span></div>
+  
+  <div id="sunburst"></div>
 </div>
 
-<div id="sunburst"></div>
+
 <div id="imgPanel"><div>
 
 </body>

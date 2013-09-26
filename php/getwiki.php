@@ -1,65 +1,81 @@
 <?php
 
-	if($_REQUEST['ant']) {
+	if($_REQUEST['ant'] && $_REQUEST['depth']) {
 		$antReq = $_REQUEST['ant'];
+		$depth = $_REQUEST['depth'];
 	}
 	else {
-		print '<p>No images available.</p>';
 		exit;
 	}
 
-	$family = 'ant';
-	$subfamilia = 'Leptanillinae';
+	if(preg_match('/local/i', $_SERVER['HTTP_HOST'])) {
+	  $urlRoot = 'http://antweb.local/api';
+	}
+	elseif(preg_match('/antweb-stg/i', $_SERVER['HTTP_HOST'])) {
+	  $urlRoot = 'http://10.2.22.83/api/';
+	}
+	else {
+		$urlRoot = 'http://www.antweb.org/api';
+	}
+	
 
-
-	$imagesUrl = 'http://en.wikipedia.org/w/api.php?action=query&format=json&titles=' . $antReq . '&prop=images';
-
-	$content = file_get_contents($imagesUrl); 
-	$array = json_decode($content, TRUE);
-
-	$page_images = array();
-
-	$i = 0;
-	foreach($array['query']['pages'] AS $page) {
-
-		if(isset($page['images'])) {
-
-			foreach($page['images'] AS $img) {
-				$img['title'] = preg_replace('/File:/i','',$img['title']);
-				$page_images[$i] = urlencode($img['title']);
-				$i++;
-			}
-
-		}
+	//we infer rank from depth of name
+	if($depth == 1) {
+		$rank = 'subfamily';
+	}
+	elseif($depth == 2) {
+		$rank = 'genus';
+	}
+	elseif($depth == 3) {
+		$rank = 'species';
 	}
 
-	$n = 0;
-	foreach($page_images AS $pi) {
+	$imagesUrl = $urlRoot . '/?rank=' . $rank . '&name=' . $antReq;
 
-		$imgUrl = 'http://en.wikipedia.org/w/api.php?action=query&format=json&titles=Image:' . $pi . '&prop=imageinfo&iiprop=url';
 
-		$imgContent = file_get_contents($imgUrl);
 
-		$array = json_decode($imgContent, TRUE);
+	$content = file_get_contents($imagesUrl); 
+	$ants = json_decode($content, TRUE);
 
-		foreach($array['query']['pages'] AS $page) {
 
-			if($page['imageinfo']) {
-				foreach($page['imageinfo'] AS $info) {
-					if(preg_match('/.webm/i',$info['url'])) {
-						print '<a href="' . $info['url'] . '"><video width="400px" ><source src="' . $info['url'] . '" type="video/webm" /></video></a>';
-						$n++;
-					}
-					elseif(!preg_match('/.svg/i',$info['url'])) {
-						print '<a href="' . $info['descriptionurl'] . '"><img src="' . $info['url'] . '" width="400px" /></a>';
-						$n++;
+	foreach($ants AS $ant) {
+		if($ant['images']) {
+			$i = 1;
+			$imgs = $ant['images'];
+
+			print '<div class="specimen_box">';
+			print '<h3>' . $ant['meta']['code'] . '</h3>';
+			print '<p class="taxonomy">' . ucfirst($ant['meta']['subfamily']) . ' ' . ucfirst($ant['meta']['genus']) . ' ' . $ant['meta']['species'] . '</p>';
+			
+			foreach($imgs AS $img) {
+				foreach($img['shot_types'] AS $type) {
+
+					foreach($type AS $t) {
+
+						foreach($t AS $url) {
+
+							if(preg_match('/high/i',$url)) {
+								$href = $url;
+							}
+
+							if(preg_match('/low/i',$url)) {
+								$src = $url;
+							}
+						}
+
+						print '<a href="'. $href . '" target="_blank"><img src="'. $src . '" /></a>';
+
 					}
 				}
 			}
+
+			print '</div>';
 		}
+		
 	}
 
-	if($n == 0) {
+	if(!$i) {
+		print '<p>url: ' . $imagesUrl . '</p>';
 		print '<p>No images available for <i>' . $antReq . '</i>.</p>';
 	}
 
