@@ -7,17 +7,8 @@
 	else {
 		exit;
 	}
-
-	if(preg_match('/local/i', $_SERVER['HTTP_HOST'])) {
-	  $urlRoot = 'http://antweb.local/api';
-	}
-	elseif(preg_match('/antweb-stg/i', $_SERVER['HTTP_HOST'])) {
-	  $urlRoot = 'http://10.2.22.83/api/';
-	}
-	else {
-		$urlRoot = 'http://www.antweb.org/api';
-	}
 	
+	$urlRoot = 'http://www.antweb.org/api/v2';
 
 	//we infer rank from depth of name
 	if($depth == 1) {
@@ -30,7 +21,7 @@
 		$rank = 'species';
 	}
 
-	$imagesUrl = $urlRoot . '/?rank=' . $rank . '&name=' . $antReq;
+	$imagesUrl = $urlRoot . '/?' . $rank . '=' . $antReq;
 
 
 
@@ -38,14 +29,14 @@
 	$ants = json_decode($content, TRUE);
 
 
-	foreach($ants AS $ant) {
+	foreach($ants['specimens'] AS $ant) {
 		if($ant['images']) {
 			$i = 1;
 			$imgs = $ant['images'];
 
 			print '<div class="specimen_box">';
-			print '<h3>' . $ant['meta']['code'] . '</h3>';
-			print '<p class="taxonomy">' . ucfirst($ant['meta']['subfamily']) . ' ' . ucfirst($ant['meta']['genus']) . ' ' . $ant['meta']['species'] . '</p>';
+			print '<h3>' . ucfirst($ant['meta']['subfamily']) . ' ' . ucfirst($ant['meta']['genus']) . ' ' . $ant['meta']['species'] . '</h3>';
+			print '<p class="taxonomy">' . $ant['meta']['code'] . '</p>';
 			
 			foreach($imgs AS $img) {
 				foreach($img['shot_types'] AS $type) {
