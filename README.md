@@ -5,4 +5,4 @@ This is my attempt to create a neat info graphic using ant data.  The data was t
 
 Still a lot of small things that are not working and I hope to fix those and add features over time.  I hope you like it.
 
-I have it hosted here: https://www.vaguespace.org/ants
+I have it hosted here: http://www.vaguespace.org/ants
