@@ -15,7 +15,11 @@ body {
 
 a {
   color:#1C86EE;
-} 
+}
+
+a:visited {
+  color:#AAAAAA;
+}
 
 #antbox {
   top:20px;
@@ -198,9 +202,9 @@ $(document).ready(function() {
 <div id="antbox">Formicidae <span id="subname"></span>
   <div id="description">
   <p>
-  The inner ring represents <i>subfamilia</i> and the outer ring represents <i>genera</i>.  
+  The inner ring represents <i>subfamilia</i> and the outer ring represents <i>genera</i>.
   </p>
-  <p> 
+  <p>
   The taxonomy data is sourced from <a href="http://www.antcat.org">www.antcat.org</a> and the specimen are sourced from the <a href="http://www.antweb.org/api/v2">AntWeb API</a>.  The sunburst layout is borrowed from <a href="http://bl.ocks.org/mbostock/4063423">here</a>.
   </p>
   <p>
@@ -208,7 +212,7 @@ $(document).ready(function() {
   </p>
   </div>
   <div><span id="rollover">Click a section to reveal any images.</span><span id="loading">Loading...</span></div>
-  
+
   <div id="sunburst"></div>
 </div>
 
